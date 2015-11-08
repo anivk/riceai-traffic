@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #map {
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="time_chooser"></div>
+
+
+    <script src="dataProcesscing.js"></script>
+    <script id="data_js" src="1jsonline.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 5,
+                center: {
+                    lat: 29.97654,
+                    lng: -95.71036
+                },
+                mapTypeId: google.maps.MapTypeId.TERRAIN
+            });
+
+            infoWindow = new google.maps.InfoWindow;
+            for (k in data.RWS) {
+                for (j in data.RWS[k].RW) {
+                    for (l in data.RWS[k].RW[j].FIS) {
+                        for (i in data.RWS[k].RW[j].FIS[l].FI) {
+                            var coords = data.RWS[k].RW[j].FIS[l].FI[i].SHP[0].value[0];
+                            var speed = data.RWS[k].RW[j].FIS[l].FI[i].CF[0].SU;
+                            addPolygon(convertCoords2LatLng(coords), speed);
+                        }
+                    }
+                }
+            }
+
+            document.getElementById("time_chooser").innerHTML = "Time: " + data.CREATED_TIMESTAMP;
+
+        }
+        function getColorFromSpeed(speed, location){
+            return //HEX color code
+        }
+        function addPolygon(coords, speed) {
+		
+			var rndColor = '#'+Math.floor(Math.random()*16777215).toString(16);
+
+            var poly = new google.maps.Polygon({
+                paths: coords,
+                strokeColor: rndColor,
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: rndColor,
+                fillOpacity: 0.35
+            });
+
+            poly.setMap(map);
+
+            poly.addListener('click', function(event) {
+                showInfo(event, speed);
+            });
+        }
+
+
+        function showInfo(event, speed) {
+            var contentString = '<b>Speed: ' + speed + '</b>';
+
+            infoWindow.setContent(contentString);
+            infoWindow.setPosition(event.latLng);
+
+            infoWindow.open(map);
+        }
+    </script>
+
+</body>
+
+</html>	
