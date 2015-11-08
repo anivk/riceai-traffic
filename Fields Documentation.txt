@@ -1,0 +1,41 @@
+flow_item_id		
+- Unique string identifier for this Linear
+
+sub_flow_item_id
+- Unique ID for this road
+
+description	
+- Text description of the road.
+
+length	
+- Lenght in km
+
+speed_without_limit	
+- Speed (based on UNITS) not capped by speed limit
+
+free_flow_speed	
+- The free flow speed on this stretch of road.
+
+tmc_location_code	
+- Point TMC Location Code
+
+road_type	
+- Road type, i.e. TR (trail)? or RA (not sure what this means)
+
+speed_with_limit
+- Speed (based on UNITS) capped by speed limit
+
+queuing_direction	
+- Queuing direction. '+' or '-'. Note this is the opposite of the travel direction in the fully qualified ID, For example for location 107+03021 it would be '-'.
+
+confidence
+- Confidence, an indication of how the speed was determined. -1.0 road closed. 1.0=100% 0.7-100% Historical Usually a value between .7 and 1.0.
+
+jam_factor	
+- Jam factor 0.0 (free flowing) to 10.0 (road closed).
+
+created_time_stamp
+- When this file was created in UTC.
+
+base_time_stamp	coords
+- Basetimestamp used as a reference for all predictive cacluluations in this Roadway
