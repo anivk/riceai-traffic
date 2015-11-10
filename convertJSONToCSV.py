@@ -2,10 +2,15 @@ __author__ = 'Tian'
 
 import json
 import mysql.connector
-
+from itertools import chain
+import os
+from glob import glob
 
 def process_dir(dir):
-    pass
+    result = (chain.from_iterable(glob(os.path.join(x[0], '*.*')) for x in os.walk(dir)))
+    for s in result:
+        addFileToDB(s)
+        print("Processed file: " + s)
 
 
 def addFileToDB(filename):
@@ -18,14 +23,21 @@ def addFileToDB(filename):
     conn = mysql.connector.connect(user='akunapar_ani', password='ttt124!@#riceilovetianani',
                                    host='box1112.bluehost.com',
                                    database='akunapar_riceai_traffic')
+
     c = conn.cursor()
 
-
-    i = 0
     try:
         while line:
 
             data = json.loads(line)
+            addDataToDB(data, c)
+            f.readline()  # skip one line
+            line = f.readline()
+    finally:
+        conn.commit()
+        conn.close()
+
+def addDataToDB(data, cursor):
             created_time_stamp = data['CREATED_TIMESTAMP']
 
             for k in range(len(data['RWS'])):
@@ -59,7 +71,7 @@ def addFileToDB(filename):
                             float(confidence), float(jam_factor), created_time_stamp,
                             base_time_stamp.replace('T', ' ').replace('Z', ''), coords)
 
-                            c.execute("""INSERT INTO flow_data (
+                            cursor.execute("""INSERT INTO flow_data (
                                     flow_item_id,
                                     sub_flow_item_id,
                                     description,
@@ -93,17 +105,6 @@ def addFileToDB(filename):
                                     %s,
                                     %s)""", row)
 
-                            print (i)
+                            print (created_time_stamp + " " + sub_flow_item_id)
 
-                            i += 1
-
-                            if i % 10000 == 0:
-                                conn.commit()
-            f.readline()  # skip one line
-            line = f.readline()
-    finally:
-        conn.commit()
-        conn.close()
-
-
-addFileToDB("flow11-02_10.json")
+process_dir('C:/Users/Tian/Desktop/flow10-31')

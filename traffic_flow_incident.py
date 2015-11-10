@@ -107,7 +107,7 @@ def store_data():
                 if b["TIMESTAMP"] != incident_last_time_stamp:
                     last_time_incident = time.time()
                     incident_last_time_stamp = b["TIMESTAMP"]
-                    print "incident",b["TIMESTAMP"]
+                    print ("incident",b["TIMESTAMP"])
 
                     f_ile =  "incident/incident" + incident_last_time_stamp[5:10] + "/" + "incident" + incident_last_time_stamp[5:10] +"_"+ incident_last_time_stamp[11:13] + ".json"
                     directory = os.path.dirname(f_ile)
@@ -149,7 +149,7 @@ def store_data():
                     jsonfile.write(os.linesep)
                     jsonfile.close()
                     time.sleep(20)
-                    
+
         except Exception, e:
                 ### Extra code in case of a network fail or error
                 print "exception time" + str(e)
