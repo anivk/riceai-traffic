@@ -8,6 +8,7 @@ from glob import glob
 
 def process_dir(dir):
     result = (chain.from_iterable(glob(os.path.join(x[0], '*.*')) for x in os.walk(dir)))
+
     for s in result:
         addFileToDB(s)
         print("Processed file: " + s)
@@ -28,17 +29,17 @@ def addFileToDB(filename):
 
     try:
         while line:
-
             data = json.loads(line)
-            addDataToDB(data, c)
+            addDataToDB(data, c, conn)
             f.readline()  # skip one line
             line = f.readline()
     finally:
         conn.commit()
         conn.close()
 
-def addDataToDB(data, cursor):
+def addDataToDB(data, cursor, connection):
             created_time_stamp = data['CREATED_TIMESTAMP']
+            global indx
 
             for k in range(len(data['RWS'])):
                 for j in range(len(data['RWS'][k]['RW'])):
@@ -105,6 +106,12 @@ def addDataToDB(data, cursor):
                                     %s,
                                     %s)""", row)
 
-                            print (created_time_stamp + " " + sub_flow_item_id)
+                            indx = indx + 1
+                            if indx % 10000 == 0:
+                                print("Committed: " + str(indx))
+                                connection.commit()
 
+                            #print (created_time_stamp + " " + sub_flow_item_id)
+
+indx = 0
 process_dir('C:/Users/Tian/Desktop/flow10-31')
