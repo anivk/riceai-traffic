@@ -6,6 +6,8 @@ from itertools import chain
 import os
 from glob import glob
 
+buffer = []
+
 def process_dir(dir):
     result = (chain.from_iterable(glob(os.path.join(x[0], '*.*')) for x in os.walk(dir)))
 
@@ -20,24 +22,13 @@ def addFileToDB(filename):
     ## Read the first line
     line = f.readline()
 
-    # SQL lite connection
-    conn = mysql.connector.connect(user='akunapar_ani', password='ttt124!@#riceilovetianani',
-                                   host='box1112.bluehost.com',
-                                   database='akunapar_riceai_traffic')
+    while line:
+        data = json.loads(line)
+        addDataToDB(data)
+        f.readline()  # skip one line
+        line = f.readline()
 
-    c = conn.cursor()
-
-    try:
-        while line:
-            data = json.loads(line)
-            addDataToDB(data, c, conn)
-            f.readline()  # skip one line
-            line = f.readline()
-    finally:
-        conn.commit()
-        conn.close()
-
-def addDataToDB(data, cursor, connection):
+def addDataToDB(data):
             created_time_stamp = data['CREATED_TIMESTAMP']
             global indx
 
@@ -65,6 +56,7 @@ def addDataToDB(data, cursor, connection):
                             confidence = CF['CN']
                             jam_factor = CF['JF']
 
+
                             row = (
                             flow_item_id, sub_flow_item_id, description, float(length), float(speed_without_limit),
                             float(free_flow_speed),
@@ -72,7 +64,24 @@ def addDataToDB(data, cursor, connection):
                             float(confidence), float(jam_factor), created_time_stamp,
                             base_time_stamp.replace('T', ' ').replace('Z', ''), coords)
 
-                            cursor.execute("""INSERT INTO flow_data (
+                            buffer.append(row)
+
+                            if len(buffer)%100 == 0:
+                                print( "Buffer processed" )
+                                process_buffer()
+
+                            #print (created_time_stamp + " " + sub_flow_item_id)
+
+def process_buffer():
+        # SQL lite connection
+    conn = mysql.connector.connect(user='akunapar_ani', password='ttt124!@#riceilovetianani',
+                                   host='box1112.bluehost.com',
+                                   database='akunapar_riceai_traffic')
+
+    try:
+        c = conn.cursor()
+        while len(buffer) != 0:
+            c.execute("""INSERT INTO flow_data (
                                     flow_item_id,
                                     sub_flow_item_id,
                                     description,
@@ -104,14 +113,13 @@ def addDataToDB(data, cursor, connection):
                                     %s,
                                     %s,
                                     %s,
-                                    %s)""", row)
+                                    %s)""", buffer.pop())
 
-                            indx = indx + 1
-                            if indx % 10000 == 0:
-                                print("Committed: " + str(indx))
-                                connection.commit()
-
-                            #print (created_time_stamp + " " + sub_flow_item_id)
+    except:
+        print("INSERT ERROR")
+    finally:
+        conn.commit()
+        conn.close()
 
 indx = 0
 process_dir('C:/Users/Tian/Desktop/flow10-31')
