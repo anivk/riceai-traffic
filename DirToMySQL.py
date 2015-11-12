@@ -1,10 +1,11 @@
 __author__ = 'Tian'
 
 import json
-import mysql.connector
 from itertools import chain
 import os
 from glob import glob
+
+import mysql.connector
 
 buffer = []
 
@@ -30,7 +31,6 @@ def addFileToDB(filename):
 
 def addDataToDB(data):
             created_time_stamp = data['CREATED_TIMESTAMP']
-            global indx
 
             for k in range(len(data['RWS'])):
                 for j in range(len(data['RWS'][k]['RW'])):

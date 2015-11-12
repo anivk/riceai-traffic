@@ -8,7 +8,7 @@ cnx = mysql.connector.connect(user='akunapar_ani', password='ttt124!@#riceilovet
 
 c = cnx.cursor()
 
-c.execute('''CREATE TABLE flow_data
+c.execute('''CREATE TABLE flow_data1
              (unique_collection_id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
              flow_item_id TINYTEXT,
              sub_flow_item_id TINYTEXT,
