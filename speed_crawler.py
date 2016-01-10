@@ -3529,44 +3529,46 @@ add_measurement = ("INSERT INTO speeds "
 
 
 b = ['1247-1245']
+months.reverse()
 
 years.reverse()
 for id in b:
-        for year in [2015]:
-            for month in months:
-                for day in range(1, calendar.monthrange(year, month)[1] + 1):
-                    for time in times:
-                        try:
-                            start = timer.time()
+    for year in [2015]:
+        for month in months:
+            for day in range(1, calendar.monthrange(year, month)[1] + 1):
+                for time in times:
+                    timestamp = datetime.datetime.strptime(str(year)+","+str(month)+","+str(day)+","+time, "%Y,%m,%d,%H%M").strftime("%Y-%m-%d %H:%M:%S")
+                    key = id+" "+timestamp
+                    try:
+                        start = timer.time()
 
-                            url = "http://traffic.houstontranstar.org/map_archive/getspeed_maparchive.aspx?src=/map_archive_data_share/{}/{}/{}/xml/speeds/{:0>2d}{:0>2d}{}&segment={}".format(
-                                year, month, day, month, day, time, id)
+                        url = "http://traffic.houstontranstar.org/map_archive/getspeed_maparchive.aspx?src=/map_archive_data_share/{}/{}/{}/xml/speeds/{:0>2d}{:0>2d}{}&segment={}".format(
+                            year, month, day, month, day, time, id)
 
-                            page = requests.get(url)
-                            tree = html.fromstring(page.content)
+                        page = requests.get(url)
+                        tree = html.fromstring(page.content)
 
-                            measurement_timestamp = tree.xpath('//span[@id="lblDataAge"]/text()')[0]
-                            measurement_timestamp = datetime.datetime.strptime(measurement_timestamp,
-                                                                    "%A, %B %d, %Y %I:%M %p").strftime("%Y-%m-%d %H:%M:%S")
+                        measurement_timestamp = tree.xpath('//span[@id="lblDataAge"]/text()')[0]
+                        measurement_timestamp = datetime.datetime.strptime(measurement_timestamp,
+                                                                "%A, %B %d, %Y %I:%M %p").strftime("%Y-%m-%d %H:%M:%S")
 
-                            timestamp = datetime.datetime.strptime(str(year)+","+str(month)+","+str(day)+","+time, "%Y,%m,%d,%H%M").strftime("%Y-%m-%d %H:%M:%S")
+                        speed = tree.xpath('//span[@id="lblSpeed"]/text()')
+                        speed = int(speed[0][:speed[0].find(" ")])
 
-                            speed = tree.xpath('//span[@id="lblSpeed"]/text()')
-                            speed = int(speed[0][:speed[0].find(" ")])
+                        c = cnx.cursor()
+                        c.execute(add_measurement, (key, speed, timestamp, measurement_timestamp, id))
+                        c.close()
+                        cnx.commit()
 
-                            key = id+" "+timestamp
-
-                            c = cnx.cursor()
-                            c.execute(add_measurement, (key, speed, timestamp, measurement_timestamp, id))
-                            c.close()
-                            cnx.commit()
-
-                            print "Sucess adding:",  key, "in", timer.time() - start
-                        except:
-                            cnx = mysql.connector.connect(user='akunapar_ani', password='ttt124!@#riceilovetianani', host='box1112.bluehost.com',
-                               database='akunapar_riceai_traffic')
-                            print "Failed adding:", key
-                            continue
-
+                        print "Sucess adding:",  key, "in", timer.time() - start
+                    except mysql.connector.errors.InterfaceError:
+                        print "Attempting to reconnect"
+                        cnx = mysql.connector.connect(user='akunapar_ani', password='ttt124!@#riceilovetianani', host='box1112.bluehost.com',
+                           database='akunapar_riceai_traffic')
+                        continue
+                    except:
+                        print "Failed adding:", key
+                        continue
 
 cnx.close()
+
