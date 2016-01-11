@@ -48,10 +48,13 @@ for seg_id, avg_lat, avg_lng, measurement_timestamp in cursor:
         query_weather(seg_id, avg_lat, avg_lng, measurement_timestamp, cnx1)
         print 'Sucessfully queried:', seg_id + " " + measurement_timestamp.strftime(
             "%Y-%m-%d %H:%M:%S"), "in", timer.time() - start
+    except mysql.connector.errors.InterfaceError:
+        print "Attempting to reconnect"
+        cnx1 = mysql.connector.connect(user='akunapar_ani', password='ttt124!@#riceilovetianani', host='box1112.bluehost.com',
+           database='akunapar_riceai_traffic')
+        continue
     except:
         print "Error at", seg_id + " " + measurement_timestamp.strftime("%Y-%m-%d %H:%M:%S")
-        cnx1 = mysql.connector.connect(user='akunapar_ani', password='ttt124!@#riceilovetianani', host='box1112.bluehost.com',
-                               database='akunapar_riceai_traffic')
         continue
 
 cnx1.commit()
