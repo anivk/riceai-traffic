@@ -13,6 +13,9 @@ def select_to_csv(select_query, filename):
         writer = csv.writer(f)
         writer.writerows(cursor)
 
-select_to_csv('SELECT timestamp, speed FROM speeds WHERE timestamp <= "2015-03-17 01:45:00" AND timestamp >= "2015-01-01" AND segment_id = "1247-1245"', "speed.csv")
-select_to_csv('SELECT measurement_timestamp, precip_intensity FROM weather WHERE measurement_timestamp>"2015-01-01" AND measurement_timestamp<="2015-03-17 01:45:00" AND segment_id = "1247-1245"', "weather.csv")
+    cursor.close()
+    cnx.close()
+
+select_to_csv('SELECT timestamp, speed FROM speeds WHERE segment_id="95-96" AND timestamp>="2014-01-01" AND timestamp<"2015-01-01"', "speed.csv")
+select_to_csv('SELECT measurement_timestamp, precip_intensity FROM weather WHERE measurement_timestamp>"2015-01-01" AND measurement_timestamp<="2016" AND segment_id = "1247-1245"', "weather.csv")
 
