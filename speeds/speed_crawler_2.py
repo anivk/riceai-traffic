@@ -30,6 +30,7 @@ end_datetime = datetime.datetime.strptime(sys.argv[3],  "%Y-%m-%d %H:%M:%S")
 c = cnx.cursor()
 c.execute('SELECT max(timestamp) FROM speeds WHERE segment_id = "{}"'.format(key))
 results = c.fetchall()
+
 print
 if results[0][0] is not None:
     current_datetime = results[0][0]
@@ -42,6 +43,7 @@ while current_datetime <= end_datetime:
     timer_start = timer.time()
 
     current_datetime += datetime.timedelta(minutes=15)
+
     url = "http://traffic.houstontranstar.org/map_archive/getspeed_maparchive.aspx?src=/map_archive_data_share/{}/{}/{}/xml/speeds/{:0>2d}{:0>2d}{:0>2d}{:0>2d}&segment={}".format(
         current_datetime.year, current_datetime.month, current_datetime.day, current_datetime.month,
         current_datetime.day, current_datetime.hour, current_datetime.minute, key)
