@@ -45,12 +45,13 @@ def crawl_sensor_for_date(date, key):
     cnx.commit()
     cursor.close()
 
-
-start_date = datetime.datetime.strptime("1/1/2014","%m/%d/%Y")
-for i in range(365*2):
-    start = timer.time()
-    start_date += datetime.timedelta(days=1)
-    crawl_sensor_for_date(start_date,570)
-    print start_date.strftime("%Y-%m-%d %H:%M:%S"), timer.time() - start
+key = ["1452-1453", "1451-1452", "1442-1443", "1443-1444"]
+for k in key:
+    start_date = datetime.datetime.strptime("1/1/2014","%m/%d/%Y")
+    for i in range(365*2):
+        start = timer.time()
+        start_date += datetime.timedelta(days=1)
+        crawl_sensor_for_date(start_date,k)
+        print k, start_date.strftime("%Y-%m-%d %H:%M:%S"), timer.time() - start
 
 cnx.close()
