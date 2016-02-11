@@ -63,8 +63,6 @@ b = ["1303-1304", "411-412", "412-413", "413-368", "368-427", "427-465", "465-44
 3) end datetime
 """
 
-cnx = mysql.connector.connect(user='akunapar_ani', password='ttt124!@#riceilovetianani', host='box1112.bluehost.com',
-                              database='akunapar_riceai_traffic')
 
 add_measurement = ("INSERT INTO speeds "
               "(measurement_id, speed, timestamp, measurement_timestamp, segment_id) "
@@ -80,6 +78,8 @@ for key in b:
     current_datetime = start_datetime
 
     while current_datetime <= end_datetime:
+        cnx = mysql.connector.connect(user='akunapar_ani', password='ttt124!@#riceilovetianani', host='box1112.bluehost.com',
+                              database='akunapar_riceai_traffic')
 
         timer_start = timer.time()
 
@@ -107,7 +107,9 @@ for key in b:
             cnx.commit()
 
             print "INSERTED:", str(timer.time()-timer_start) + "s" , (key + " " + current_datetime.strftime("%Y-%m-%d %H:%M:%S"), speed, current_datetime, measurement_timestamp, key)
+
+            cnx.close()
         except:
             print "ERROR", url
 
-    cnx.close()
+
