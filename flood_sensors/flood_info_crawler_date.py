@@ -27,6 +27,7 @@ def crawl_sensor_for_date(date, key):
             reading_datetime = sensor_reading[0][1].text
             reading_datetime = datetime.datetime.strptime(reading_datetime, "%m/%d/%Y %I:%M %p")
             reading_datetime = reading_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
             elevation = sensor_reading[0][2].text[:-1]
 
             measurement_id = str(key) + " " + reading_datetime
@@ -39,16 +40,18 @@ def crawl_sensor_for_date(date, key):
                 cursor.execute(sql)
             except:
                 print "ERROR:", measurement_id
+
         number_of_water_level_readings += 1
     cnx.commit()
     cursor.close()
 
-keys_to_query =
-start_date = datetime.datetime.strptime("1/1/2014","%m/%d/%Y")
-for i in range(365*2):
-    start = timer.time()
-    start_date += datetime.timedelta(days=1)
-    crawl_sensor_for_date(start_date,570)
-    print start_date.strftime("%Y-%m-%d %H:%M:%S"), timer.time() - start
+key = ["1452-1453", "1451-1452", "1442-1443", "1443-1444"]
+for k in key:
+    start_date = datetime.datetime.strptime("1/1/2014","%m/%d/%Y")
+    for i in range(365*2):
+        start = timer.time()
+        start_date += datetime.timedelta(days=1)
+        crawl_sensor_for_date(start_date,k)
+        print k, start_date.strftime("%Y-%m-%d %H:%M:%S"), timer.time() - start
 
 cnx.close()
